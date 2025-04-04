@@ -2,3 +2,4 @@ tf-env/
 __pycache__/
 *.log
 index.html/
+main.ipynb/
