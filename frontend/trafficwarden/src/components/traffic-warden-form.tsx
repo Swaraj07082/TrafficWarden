@@ -5,7 +5,7 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,7 +24,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -56,31 +55,31 @@ const formSchema = z.object({
   dst_bytes: z.coerce.number({
     required_error: "Field is required",
   }),
-  land: z.boolean({
+  land: z.coerce.number({
     required_error: "Field is required",
   }),
-  wrong_fragment: z.boolean({
+  wrong_fragment: z.coerce.number({
     required_error: "Field is required",
   }),
-  urgent: z.boolean({
+  urgent: z.coerce.number({
     required_error: "Field is required",
   }),
-  hot: z.boolean({
+  hot: z.coerce.number({
     required_error: "Field is required",
   }),
   num_failed_logins: z.coerce.number({
     required_error: "Field is required",
   }),
-  logged_in: z.boolean({
+  logged_in: z.coerce.number({
     required_error: "Field is required",
   }),
   num_compromised: z.coerce.number({
     required_error: "Field is required",
   }),
-  root_shell: z.boolean({
+  root_shell: z.coerce.number({
     required_error: "Field is required",
   }),
-  su_attempted: z.boolean({
+  su_attempted: z.coerce.number({
     required_error: "Field is required",
   }),
   num_root: z.coerce.number({
@@ -98,10 +97,10 @@ const formSchema = z.object({
   num_outbound_cmds: z.coerce.number({
     required_error: "Field is required",
   }),
-  is_host_login: z.boolean({
+  is_host_login: z.coerce.number({
     required_error: "Field is required",
   }),
-  is_guest_login: z.boolean({
+  is_guest_login: z.coerce.number({
     required_error: "Field is required",
   }),
   count: z.coerce.number({
@@ -110,25 +109,25 @@ const formSchema = z.object({
   srv_count: z.coerce.number({
     required_error: "Field is required",
   }),
-  serror_rate: z.number({
+  serror_rate: z.coerce.number({
     required_error: "Field is required",
   }),
-  srv_serror_rate: z.number({
+  srv_serror_rate: z.coerce.number({
     required_error: "Field is required",
   }),
-  rerror_rate: z.number({
+  rerror_rate: z.coerce.number({
     required_error: "Field is required",
   }),
-  srv_rerror_rate: z.number({
+  srv_rerror_rate: z.coerce.number({
     required_error: "Field is required",
   }),
-  same_srv_rate: z.number({
+  same_srv_rate: z.coerce.number({
     required_error: "Field is required",
   }),
-  diff_srv_rate: z.number({
+  diff_srv_rate: z.coerce.number({
     required_error: "Field is required",
   }),
-  srv_diff_host_rate: z.number({
+  srv_diff_host_rate: z.coerce.number({
     required_error: "Field is required",
   }),
   dst_host_count: z.coerce.number({
@@ -137,35 +136,80 @@ const formSchema = z.object({
   dst_host_srv_count: z.coerce.number({
     required_error: "Field is required",
   }),
-  dst_host_same_srv_rate: z.number({
+  dst_host_same_srv_rate: z.coerce.number({
     required_error: "Field is required",
   }),
-  dst_host_diff_srv_rate: z.number({
+  dst_host_diff_srv_rate: z.coerce.number({
     required_error: "Field is required",
   }),
-  dst_host_same_src_port_rate: z.number({
+  dst_host_same_src_port_rate: z.coerce.number({
     required_error: "Field is required",
   }),
-  dst_host_srv_diff_host_rate: z.number({
-    required_error: "Field is required",
-  }),
-
-  dst_host_serror_rate: z.number({
-    required_error: "Field is required",
-  }),
-  dst_host_srv_serror_rate: z.number({
-    required_error: "Field is required",
-  }),
-  dst_host_rerror_rate: z.number({
+  dst_host_srv_diff_host_rate: z.coerce.number({
     required_error: "Field is required",
   }),
 
-  dst_host_srv_rerror_rate: z.number({
+  dst_host_serror_rate: z.coerce.number({
+    required_error: "Field is required",
+  }),
+  dst_host_srv_serror_rate: z.coerce.number({
+    required_error: "Field is required",
+  }),
+  dst_host_rerror_rate: z.coerce.number({
+    required_error: "Field is required",
+  }),
+
+  dst_host_srv_rerror_rate: z.coerce.number({
     required_error: "Field is required",
   }),
 });
 
+interface formDataType {
+  duration: number;
+  protocol_type: string;
+  service: string;
+  flag: string;
+  src_bytes: number;
+  dst_bytes: number;
+  land: number ;
+  wrong_fragment: number ;
+  urgent: number ;
+  hot: number ;
+  num_failed_logins: number;
+  logged_in: number ;
+  num_compromised: number;
+  root_shell: number ;
+  su_attempted: number ;
+  num_root: number;
+  num_file_creations: number;
+  num_shells: number;
+  num_access_files: number;
+  num_outbound_cmds: number;
+  is_host_login: number ;
+  is_guest_login: number;
+  count: number;
+  srv_count: number;
+  serror_rate: number;
+  srv_serror_rate: number;
+  rerror_rate: number;
+  srv_rerror_rate: number;
+  same_srv_rate: number;
+  diff_srv_rate: number;
+  srv_diff_host_rate: number;
+  dst_host_count: number;
+  dst_host_srv_count: number;
+  dst_host_same_srv_rate: number;
+  dst_host_diff_srv_rate: number;
+  dst_host_same_src_port_rate: number;
+  dst_host_srv_diff_host_rate: number;
+  dst_host_serror_rate: number;
+  dst_host_srv_serror_rate: number;
+  dst_host_rerror_rate: number;
+  dst_host_srv_rerror_rate: number;
+}
 export default function TrafficWardenForm() {
+  const [FormData, setFormData] = useState<formDataType>();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -184,115 +228,64 @@ export default function TrafficWardenForm() {
       num_shells: 0,
       num_access_files: 0,
       num_outbound_cmds: 0,
-      serror_rate : 0,
-      srv_serror_rate : 0,
-      rerror_rate : 0,
-      srv_rerror_rate : 0,
-      dst_host_same_srv_rate : 0,
-      dst_host_diff_srv_rate : 0,
-      dst_host_same_src_port_rate : 0,
-      dst_host_srv_diff_host_rate : 0,
-      dst_host_serror_rate : 0,
-      dst_host_srv_serror_rate : 0,
-      dst_host_rerror_rate : 0,
-      dst_host_srv_rerror_rate :0,
-      same_srv_rate : 0,
-      diff_srv_rate : 0,
-      srv_diff_host_rate : 0
-    
+      serror_rate: 0,
+      srv_serror_rate: 0,
+      rerror_rate: 0,
+      srv_rerror_rate: 0,
+      dst_host_same_srv_rate: 0,
+      dst_host_diff_srv_rate: 0,
+      dst_host_same_src_port_rate: 0,
+      dst_host_srv_diff_host_rate: 0,
+      dst_host_serror_rate: 0,
+      dst_host_srv_serror_rate: 0,
+      dst_host_rerror_rate: 0,
+      dst_host_srv_rerror_rate: 0,
+      same_srv_rate: 0,
+      diff_srv_rate: 0,
+      srv_diff_host_rate: 0,
+      land: 0,
+      wrong_fragment: 0 ,
+      urgent: 0 ,
+      hot: 0 ,
+      logged_in: 0 ,
+      root_shell: 0 ,
+      su_attempted: 0 ,
+      is_host_login: 0 ,
+      is_guest_login: 0,
     },
   });
 
-  // const [formData, setFormData] = useState({
-  //   // Basic metrics
-  //   src_bytes: "",
-  //   dst_bytes: "",
-  //   duration: "",
+  async function postdata() {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(FormData),
+      });
 
-  //   // Connection info
-  //   protocol_type: "tcp",
-  //   service: "",
-  //   flag: "",
-
-  //   // Error rates
-  //   serror_rate: 0,
-  //   srv_serror_rate: 0,
-  //   rerror_rate: 0,
-  //   srv_rerror_rate: 0,
-
-  //   // Host metrics
-  //   dst_host_count: "",
-  //   dst_host_srv_count: "",
-  //   dst_host_same_srv_rate: 0,
-  //   dst_host_diff_srv_rate: 0,
-  //   dst_host_same_src_port_rate: 0,
-  //   dst_host_srv_diff_host_rate: 0,
-  //   dst_host_serror_rate: 0,
-  //   dst_host_srv_serror_rate: 0,
-  //   dst_host_rerror_rate: 0,
-  //   dst_host_srv_rerror_rate: 0,
-
-  //   // Service metrics
-  //   count: "",
-  //   srv_count: "",
-  //   same_srv_rate: 0,
-  //   diff_srv_rate: 0,
-  //   srv_diff_host_rate: 0,
-
-  //   // Security flags
-  //   land: false,
-  //   wrong_fragment: false,
-  //   urgent: false,
-  //   hot: false,
-  //   num_failed_logins: "",
-  //   logged_in: false,
-  //   num_compromised: "",
-  //   root_shell: false,
-  //   su_attempted: false,
-  //   num_root: "",
-  //   num_file_creations: "",
-  //   num_shells: "",
-  //   num_access_files: "",
-  //   num_outbound_cmds: "",
-  //   is_host_login: false,
-  //   is_guest_login: false,
-  // });
-
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value, type, checked } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: type === "checkbox" ? checked : value,
-  //   });
-  // };
-
-  // const handleSelectChange = (name: string, value: string) => {
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value,
-  //   });
-  // };
-
-  // const handleSliderChange = (name: string, value: number[]) => {
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value[0],
-  //   });
-  // };
-
-  // const handleSwitchChange = (name: string, checked: boolean) => {
-  //   setFormData({
-  //     ...formData,
-  //     [name]: checked,
-  //   });
-  // };
+      const result = await response.json();
+      console.log(result);
+      return result;
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     // e.preventDefault();
     console.log("Form data submitted:", values);
+    setFormData(values);
+
+    // FormData?.land == true ? FormData.land = 1 : FormData?.land = 0
+     
+    postdata();
     // Here you would typically send the data to your backend
     alert("Data submitted successfully!");
   };
+
+  console.log("this is state", FormData);
 
   return (
     <Form {...form}>
@@ -923,7 +916,9 @@ export default function TrafficWardenForm() {
                         name="dst_host_same_src_port_rate"
                         render={({ field: { value, onChange } }) => (
                           <FormItem>
-                            <FormLabel>dst_host_same_src_port_rate - {value}</FormLabel>
+                            <FormLabel>
+                              dst_host_same_src_port_rate - {value}
+                            </FormLabel>
                             <FormControl>
                               <Slider
                                 min={0}

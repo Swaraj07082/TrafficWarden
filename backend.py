@@ -2,9 +2,21 @@ from fastapi import FastAPI
 import joblib
 import numpy as np
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+
 
 
 app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 class Features(BaseModel):
     duration : float
@@ -13,22 +25,22 @@ class Features(BaseModel):
     flag  : str
     src_bytes  : float  
     dst_bytes  : float  
-    land   : float
-    wrong_fragment : float  
-    urgent: float
-    hot: float
+    land   : bool
+    wrong_fragment : bool  
+    urgent: bool
+    hot: bool
     num_failed_logins : float
-    logged_in    : float
+    logged_in    : bool
     num_compromised  : float
-    root_shell : float
-    su_attempted: float
+    root_shell : bool
+    su_attempted: bool
     num_root    : float
     num_file_creations : float   
     num_shells   : float
     num_access_files : float
     num_outbound_cmds    : float
-    is_host_login: float
-    is_guest_login    : float
+    is_host_login: bool
+    is_guest_login    : bool
     count   : float
     srv_count: float
     serror_rate: float
@@ -53,6 +65,9 @@ class Features(BaseModel):
 
 @app.post('/predict')
 async def predict(features : Features):
+    print(features)
+
+    
     return features
 
     
