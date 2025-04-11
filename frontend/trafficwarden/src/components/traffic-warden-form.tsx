@@ -37,7 +37,7 @@ import { Switch } from "@/components/ui/switch";
 import { useForm } from "react-hook-form";
 
 const formSchema = z.object({
-  duration: z.coerce.number({
+  duration: z.string({
     required_error: "Field is required",
   }),
   protocol_type: z.string({
@@ -165,7 +165,7 @@ const formSchema = z.object({
 });
 
 interface formDataType {
-  duration: number;
+  duration: string;
   protocol_type: string;
   service: string;
   flag: string;
@@ -215,7 +215,7 @@ export default function TrafficWardenForm() {
     defaultValues: {
       src_bytes: 0,
       dst_bytes: 0,
-      duration: 0,
+      duration: "",
       service: "",
       dst_host_count: 0,
       dst_host_srv_count: 0,
@@ -378,18 +378,32 @@ export default function TrafficWardenForm() {
                       value={formData.duration}
                       onChange={handleInputChange}
                     /> */}
-                    <FormField
+                     <FormField
                       control={form.control}
                       name="duration"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Enter duration</FormLabel>
-                          <FormControl>
-                            <Input placeholder="duration" {...field} />
-                          </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+                          <FormLabel>Flag</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a flag" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="0">0</SelectItem>
+                              <SelectItem value="0-10000">0-10000</SelectItem>
+                              <SelectItem value="10000-20000">10000-20000</SelectItem>
+                              <SelectItem value="20000-30000">20000-30000</SelectItem>
+                              <SelectItem value="30000-40000">30000-40000</SelectItem>
+                              <SelectItem value="40000 - 50000">40000 - 50000</SelectItem>                              
+                              <SelectItem value="50000 - 60000">50000 - 60000</SelectItem>                              
+
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -521,17 +535,17 @@ export default function TrafficWardenForm() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="sf">SF</SelectItem>
-                              <SelectItem value="s0">S0</SelectItem>
-                              <SelectItem value="rej">REJ</SelectItem>
-                              <SelectItem value="rstr">RSTR</SelectItem>
-                              <SelectItem value="rsto">RSTO</SelectItem>
-                              <SelectItem value="s1">S1</SelectItem>
-                              <SelectItem value="sh">SH</SelectItem>
-                              <SelectItem value="s2">S2</SelectItem>
-                              <SelectItem value="rstos0">RSTOS0</SelectItem>
-                              <SelectItem value="s3">S3</SelectItem>
-                              <SelectItem value="oth">OTH</SelectItem>
+                              <SelectItem value="SF">SF</SelectItem>
+                              <SelectItem value="S0">S0</SelectItem>
+                              <SelectItem value="REJ">REJ</SelectItem>
+                              <SelectItem value="RSTR">RSTR</SelectItem>
+                              <SelectItem value="RSTO">RSTO</SelectItem>
+                              <SelectItem value="S1">S1</SelectItem>
+                              <SelectItem value="SH">SH</SelectItem>
+                              <SelectItem value="S2">S2</SelectItem>
+                              <SelectItem value="RSTOS0">RSTOS0</SelectItem>
+                              <SelectItem value="S3">S3</SelectItem>
+                              <SelectItem value="OTH">OTH</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
