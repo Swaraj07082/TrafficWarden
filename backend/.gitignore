@@ -1,4 +1,4 @@
-tf-env/
+venv/
 __pycache__/
 *.log
 index.html/
