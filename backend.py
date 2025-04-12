@@ -94,9 +94,10 @@ async def predict(features : Features):
 
     pred = model.predict(final_input)
     label = target_encoder.inverse_transform(pred)
-    print(f"features : {label[0]}")
+    print(f"Prediction: {label[0]}")
 
     
-    return features
+    return {"prediction": label[0]}
+
 
     

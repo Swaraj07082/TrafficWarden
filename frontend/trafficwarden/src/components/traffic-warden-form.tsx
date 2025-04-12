@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { z } from "zod";
 import {
   Form,
@@ -171,21 +172,21 @@ interface formDataType {
   flag: string;
   src_bytes: number;
   dst_bytes: number;
-  land: number ;
-  wrong_fragment: number ;
-  urgent: number ;
-  hot: number ;
+  land: number;
+  wrong_fragment: number;
+  urgent: number;
+  hot: number;
   num_failed_logins: number;
-  logged_in: number ;
+  logged_in: number;
   num_compromised: number;
-  root_shell: number ;
-  su_attempted: number ;
+  root_shell: number;
+  su_attempted: number;
   num_root: number;
   num_file_creations: number;
   num_shells: number;
   num_access_files: number;
   num_outbound_cmds: number;
-  is_host_login: number ;
+  is_host_login: number;
   is_guest_login: number;
   count: number;
   srv_count: number;
@@ -209,14 +210,15 @@ interface formDataType {
 }
 export default function TrafficWardenForm() {
   const [FormData, setFormData] = useState<formDataType>();
+  const [Prediction, setPrediction] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       src_bytes: 0,
       dst_bytes: 0,
-      duration: "",
-      service: "",
+      // duration: "",
+      service: "http",
       dst_host_count: 0,
       dst_host_srv_count: 0,
       count: 0,
@@ -244,45 +246,45 @@ export default function TrafficWardenForm() {
       diff_srv_rate: 0,
       srv_diff_host_rate: 0,
       land: 0,
-      wrong_fragment: 0 ,
-      urgent: 0 ,
-      hot: 0 ,
-      logged_in: 0 ,
-      root_shell: 0 ,
-      su_attempted: 0 ,
-      is_host_login: 0 ,
+      wrong_fragment: 0,
+      urgent: 0,
+      hot: 0,
+      logged_in: 0,
+      root_shell: 0,
+      su_attempted: 0,
+      is_host_login: 0,
       is_guest_login: 0,
     },
   });
 
-  async function postdata() {
+  async function postdata(data: formDataType) {
     try {
       const response = await fetch("http://127.0.0.1:8000/predict", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
         },
-        body: JSON.stringify(FormData),
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
-      console.log(result);
-      return result;
+      setPrediction(result.prediction);
+      console.log("prediction" + Prediction);
+      alert(`${result.prediction}`);
+
+      return Prediction;
     } catch (error) {
       console.error("Error:", error);
     }
   }
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // e.preventDefault();
     console.log("Form data submitted:", values);
     setFormData(values);
 
-    // FormData?.land == true ? FormData.land = 1 : FormData?.land = 0
-     
-    postdata();
-    // Here you would typically send the data to your backend
-    alert("Data submitted successfully!");
+    postdata(values);
+
+    alert("Data submitted successfully");
   };
 
   console.log("this is state", FormData);
@@ -291,7 +293,7 @@ export default function TrafficWardenForm() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Tabs defaultValue="basic" className="w-full">
-          <TabsList className="grid grid-cols-5 mb-4">
+          <TabsList className="grid grid-cols-5 mb-4 w-full max-md:hidden ">
             <TabsTrigger value="basic">Basic</TabsTrigger>
             <TabsTrigger value="connection">Connection</TabsTrigger>
             <TabsTrigger value="host">Host Metrics</TabsTrigger>
@@ -299,7 +301,18 @@ export default function TrafficWardenForm() {
             <TabsTrigger value="security">Security Flags</TabsTrigger>
           </TabsList>
 
-          {/* Basic Metrics Tab */}
+          <TabsList className="grid grid-cols-3 mb-4 w-full md:hidden ">
+            <TabsTrigger value="basic">Basic</TabsTrigger>
+            <TabsTrigger value="connection">Connection</TabsTrigger>
+            <TabsTrigger value="host">Host Metrics</TabsTrigger>
+           
+          </TabsList>
+
+          <TabsList className=" grid grid-cols-2 mb-4 w-full md:hidden">
+          <TabsTrigger value="service">Service Metrics</TabsTrigger>
+          <TabsTrigger value="security">Security Flags</TabsTrigger>
+          </TabsList>
+
           <TabsContent value="basic">
             <Card>
               <CardHeader>
@@ -311,15 +324,6 @@ export default function TrafficWardenForm() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    {/* <Label htmlFor="src_bytes">Source Bytes</Label>
-                    <Input
-                      id="src_bytes"
-                      name="src_bytes"
-                      type="text"
-                      placeholder="Enter source bytes"
-                      value={formData.src_bytes}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="src_bytes"
@@ -332,25 +336,13 @@ export default function TrafficWardenForm() {
                               {...field}
                             />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="dst_bytes">Destination Bytes</Label>
-                    <Input
-                      id="dst_bytes"
-                      name="dst_bytes"
-                      type="text"
-                      placeholder="Enter destination bytes"
-                      value={formData.dst_bytes}
-                      onChange={handleInputChange}
-                    /> */}
-
                     <FormField
                       control={form.control}
                       name="dst_bytes"
@@ -360,48 +352,43 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="dst_bytes" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="duration">Duration</Label>
-                    <Input
-                      id="duration"
-                      name="duration"
-                      type="text"
-                      placeholder="Enter duration"
-                      value={formData.duration}
-                      onChange={handleInputChange}
-                    /> */}
-                     <FormField
+                    <FormField
                       control={form.control}
                       name="duration"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Flag</FormLabel>
+                          <FormLabel>Duration</FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select a flag" />
+                                <SelectValue placeholder="Duration" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
                               <SelectItem value="0">0</SelectItem>
                               <SelectItem value="0-10000">0-10000</SelectItem>
-                              <SelectItem value="10000-20000">10000-20000</SelectItem>
-                              <SelectItem value="20000-30000">20000-30000</SelectItem>
-                              <SelectItem value="30000-40000">30000-40000</SelectItem>
-                              <SelectItem value="40000 - 50000">40000 - 50000</SelectItem>                              
-                              <SelectItem value="50000 - 60000">50000 - 60000</SelectItem>                              
-
+                              <SelectItem value="10000-20000">
+                                10000-20000
+                              </SelectItem>
+                              <SelectItem value="20000-30000">
+                                20000-30000
+                              </SelectItem>
+                              <SelectItem value="30000-40000">
+                                30000-40000
+                              </SelectItem>
+                              <SelectItem value="40000 - 50000">
+                                40000 - 50000
+                              </SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -414,7 +401,6 @@ export default function TrafficWardenForm() {
             </Card>
           </TabsContent>
 
-          {/* Connection Info Tab */}
           <TabsContent value="connection">
             <Card>
               <CardHeader>
@@ -426,22 +412,6 @@ export default function TrafficWardenForm() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    {/* <Label htmlFor="protocol_type">Protocol Type</Label>
-                    <Select
-                      value={formData.protocol_type}
-                      onValueChange={(value) =>
-                        handleSelectChange("protocol_type", value)
-                      }
-                    >
-                      <SelectTrigger id="protocol_type">
-                        <SelectValue placeholder="Select protocol" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="tcp">TCP</SelectItem>
-                        <SelectItem value="udp">UDP</SelectItem>
-                        <SelectItem value="icmp">ICMP</SelectItem>
-                      </SelectContent>
-                    </Select> */}
                     <FormField
                       control={form.control}
                       name="protocol_type"
@@ -469,14 +439,6 @@ export default function TrafficWardenForm() {
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="service">Service</Label>
-                    <Input
-                      id="service"
-                      name="service"
-                      placeholder="Enter service"
-                      value={formData.service}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="service"
@@ -486,39 +448,13 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="service" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="flag">Flag</Label>
-                    <Select
-                      value={formData.flag}
-                      onValueChange={(value) =>
-                        handleSelectChange("flag", value)
-                      }
-                    >
-                      <SelectTrigger id="flag">
-                        <SelectValue placeholder="Select flag" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sf">SF</SelectItem>
-                        <SelectItem value="s0">S0</SelectItem>
-                        <SelectItem value="rej">REJ</SelectItem>
-                        <SelectItem value="rstr">RSTR</SelectItem>
-                        <SelectItem value="rsto">RSTO</SelectItem>
-                        <SelectItem value="s1">S1</SelectItem>
-                        <SelectItem value="sh">SH</SelectItem>
-                        <SelectItem value="s2">S2</SelectItem>
-                        <SelectItem value="rstos0">RSTOS0</SelectItem>
-                        <SelectItem value="s3">S3</SelectItem>
-                        <SelectItem value="oth">OTH</SelectItem>
-                      </SelectContent>
-                    </Select> */}
                     <FormField
                       control={form.control}
                       name="flag"
@@ -559,22 +495,6 @@ export default function TrafficWardenForm() {
                   <h3 className="text-lg font-medium">Error Rates</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="serror_rate">SError Rate</Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.serror_rate}
-                        </span>
-                      </div> */}
-                      {/* <Slider
-                        id="serror_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.serror_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("serror_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="serror_rate"
@@ -592,31 +512,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="srv_serror_rate">Srv SError Rate</Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.srv_serror_rate}
-                        </span>
-                      </div> */}
-                      {/* <Slider
-                        id="srv_serror_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.srv_serror_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("srv_serror_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="srv_serror_rate"
@@ -634,31 +536,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="rerror_rate">RError Rate</Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.rerror_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="rerror_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.rerror_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("rerror_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="rerror_rate"
@@ -676,31 +560,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="srv_rerror_rate">Srv RError Rate</Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.srv_rerror_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="srv_rerror_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.srv_rerror_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("srv_rerror_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="srv_rerror_rate"
@@ -718,9 +584,7 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -732,7 +596,6 @@ export default function TrafficWardenForm() {
             </Card>
           </TabsContent>
 
-          {/* Host Metrics Tab */}
           <TabsContent value="host">
             <Card>
               <CardHeader>
@@ -744,17 +607,6 @@ export default function TrafficWardenForm() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    {/* <Label htmlFor="dst_host_count">
-                      Destination Host Count
-                    </Label>
-                    <Input
-                      id="dst_host_count"
-                      name="dst_host_count"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.dst_host_count}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="dst_host_count"
@@ -764,26 +616,13 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="dst_host_count" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="dst_host_srv_count">
-                      Destination Host Service Count
-                    </Label>
-                    <Input
-                      id="dst_host_srv_count"
-                      name="dst_host_srv_count"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.dst_host_srv_count}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="dst_host_srv_count"
@@ -798,9 +637,7 @@ export default function TrafficWardenForm() {
                               {...field}
                             />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
@@ -812,24 +649,6 @@ export default function TrafficWardenForm() {
                   <h3 className="text-lg font-medium">Host Rates</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="dst_host_same_srv_rate">
-                          Same Service Rate
-                        </Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.dst_host_same_srv_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="dst_host_same_srv_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.dst_host_same_srv_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("dst_host_same_srv_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="dst_host_same_srv_rate"
@@ -849,33 +668,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="dst_host_diff_srv_rate">
-                          Different Service Rate
-                        </Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.dst_host_diff_srv_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="dst_host_diff_srv_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.dst_host_diff_srv_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("dst_host_diff_srv_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="dst_host_diff_srv_rate"
@@ -895,36 +694,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="dst_host_same_src_port_rate">
-                          Same Source Port Rate
-                        </Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.dst_host_same_src_port_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="dst_host_same_src_port_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.dst_host_same_src_port_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange(
-                            "dst_host_same_src_port_rate",
-                            value
-                          )
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="dst_host_same_src_port_rate"
@@ -944,36 +720,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="dst_host_srv_diff_host_rate">
-                          Service Different Host Rate
-                        </Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.dst_host_srv_diff_host_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="dst_host_srv_diff_host_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.dst_host_srv_diff_host_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange(
-                            "dst_host_srv_diff_host_rate",
-                            value
-                          )
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="dst_host_srv_diff_host_rate"
@@ -993,9 +746,7 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -1008,24 +759,6 @@ export default function TrafficWardenForm() {
                   <h3 className="text-lg font-medium">Host Error Rates</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="dst_host_serror_rate">
-                          SError Rate
-                        </Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.dst_host_serror_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="dst_host_serror_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.dst_host_serror_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("dst_host_serror_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="dst_host_serror_rate"
@@ -1045,33 +778,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="dst_host_srv_serror_rate">
-                          Service SError Rate
-                        </Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.dst_host_srv_serror_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="dst_host_srv_serror_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.dst_host_srv_serror_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("dst_host_srv_serror_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="dst_host_srv_serror_rate"
@@ -1091,33 +804,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="dst_host_rerror_rate">
-                          RError Rate
-                        </Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.dst_host_rerror_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="dst_host_rerror_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.dst_host_rerror_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("dst_host_rerror_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="dst_host_rerror_rate"
@@ -1137,33 +830,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="dst_host_srv_rerror_rate">
-                          Service RError Rate
-                        </Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.dst_host_srv_rerror_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="dst_host_srv_rerror_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.dst_host_srv_rerror_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("dst_host_srv_rerror_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="dst_host_srv_rerror_rate"
@@ -1183,9 +856,7 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -1197,7 +868,6 @@ export default function TrafficWardenForm() {
             </Card>
           </TabsContent>
 
-          {/* Service Metrics Tab */}
           <TabsContent value="service">
             <Card>
               <CardHeader>
@@ -1209,15 +879,6 @@ export default function TrafficWardenForm() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    {/* <Label htmlFor="count">Connection Count</Label>
-                    <Input
-                      id="count"
-                      name="count"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.count}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="count"
@@ -1227,24 +888,13 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="count" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="srv_count">Service Count</Label>
-                    <Input
-                      id="srv_count"
-                      name="srv_count"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.srv_count}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="srv_count"
@@ -1254,9 +904,7 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="srv_count" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
@@ -1268,22 +916,6 @@ export default function TrafficWardenForm() {
                   <h3 className="text-lg font-medium">Service Rates</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="same_srv_rate">Same Service Rate</Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.same_srv_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="same_srv_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.same_srv_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("same_srv_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="same_srv_rate"
@@ -1301,33 +933,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="diff_srv_rate">
-                          Different Service Rate
-                        </Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.diff_srv_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="diff_srv_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.diff_srv_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("diff_srv_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="diff_srv_rate"
@@ -1345,33 +957,13 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
                     <div className="space-y-2">
-                      {/* <div className="flex justify-between">
-                        <Label htmlFor="srv_diff_host_rate">
-                          Service Different Host Rate
-                        </Label>
-                        <span className="text-sm text-muted-foreground">
-                          {formData.srv_diff_host_rate}
-                        </span>
-                      </div>
-                      <Slider
-                        id="srv_diff_host_rate"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={[formData.srv_diff_host_rate]}
-                        onValueChange={(value) =>
-                          handleSliderChange("srv_diff_host_rate", value)
-                        }
-                      /> */}
                       <FormField
                         control={form.control}
                         name="srv_diff_host_rate"
@@ -1389,9 +981,7 @@ export default function TrafficWardenForm() {
                                 }}
                               />
                             </FormControl>
-                            {/* <FormDescription>
-                              This is a description for the price.
-                            </FormDescription> */}
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -1403,7 +993,6 @@ export default function TrafficWardenForm() {
             </Card>
           </TabsContent>
 
-          {/* Security Flags Tab */}
           <TabsContent value="security">
             <Card>
               <CardHeader>
@@ -1416,14 +1005,6 @@ export default function TrafficWardenForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="flex items-center space-x-2">
-                      {/* <Switch
-                        id="land"
-                        checked={formData.land}
-                        onCheckedChange={(checked) =>
-                          handleSwitchChange("land", checked)
-                        }
-                      />
-                      <Label htmlFor="land">Land</Label> */}
                       <FormField
                         control={form.control}
                         name="land"
@@ -1431,10 +1012,6 @@ export default function TrafficWardenForm() {
                           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                             <div className="space-y-0.5">
                               <FormLabel>Land</FormLabel>
-                              {/* <FormDescription>
-                                Receive emails about new products, features, and
-                                more.
-                              </FormDescription> */}
                             </div>
                             <FormControl>
                               <Switch
@@ -1447,14 +1024,6 @@ export default function TrafficWardenForm() {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      {/* <Switch
-                        id="wrong_fragment"
-                        checked={formData.wrong_fragment}
-                        onCheckedChange={(checked) =>
-                          handleSwitchChange("wrong_fragment", checked)
-                        }
-                      />
-                      <Label htmlFor="wrong_fragment">Wrong Fragment</Label> */}
                       <FormField
                         control={form.control}
                         name="wrong_fragment"
@@ -1462,9 +1031,6 @@ export default function TrafficWardenForm() {
                           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                             <div className="space-y-0.5">
                               <FormLabel>Wrong Fragment</FormLabel>
-                              {/* <FormDescription>
-                      Receive emails about new products, features, and more.
-                    </FormDescription> */}
                             </div>
                             <FormControl>
                               <Switch
@@ -1477,14 +1043,6 @@ export default function TrafficWardenForm() {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      {/* <Switch
-                        id="urgent"
-                        checked={formData.urgent}
-                        onCheckedChange={(checked) =>
-                          handleSwitchChange("urgent", checked)
-                        }
-                      />
-                      <Label htmlFor="urgent">Urgent</Label> */}
                       <FormField
                         control={form.control}
                         name="urgent"
@@ -1492,10 +1050,6 @@ export default function TrafficWardenForm() {
                           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                             <div className="space-y-0.5">
                               <FormLabel>Urgent</FormLabel>
-                              {/* <FormDescription>
-                                Receive emails about new products, features, and
-                                more.
-                              </FormDescription> */}
                             </div>
                             <FormControl>
                               <Switch
@@ -1508,14 +1062,6 @@ export default function TrafficWardenForm() {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      {/* <Switch
-                        id="hot"
-                        checked={formData.hot}
-                        onCheckedChange={(checked) =>
-                          handleSwitchChange("hot", checked)
-                        }
-                      />
-                      <Label htmlFor="hot">Hot</Label> */}
                       <FormField
                         control={form.control}
                         name="hot"
@@ -1523,10 +1069,6 @@ export default function TrafficWardenForm() {
                           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                             <div className="space-y-0.5">
                               <FormLabel>Hot</FormLabel>
-                              {/* <FormDescription>
-                                Receive emails about new products, features, and
-                                more.
-                              </FormDescription> */}
                             </div>
                             <FormControl>
                               <Switch
@@ -1539,14 +1081,6 @@ export default function TrafficWardenForm() {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      {/* <Switch
-                        id="logged_in"
-                        checked={formData.logged_in}
-                        onCheckedChange={(checked) =>
-                          handleSwitchChange("logged_in", checked)
-                        }
-                      />
-                      <Label htmlFor="logged_in">Logged In</Label> */}
                       <FormField
                         control={form.control}
                         name="logged_in"
@@ -1554,9 +1088,6 @@ export default function TrafficWardenForm() {
                           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                             <div className="space-y-0.5">
                               <FormLabel>Logged in</FormLabel>
-                              {/* <FormDescription>
-                      Receive emails about new products, features, and more.
-                    </FormDescription> */}
                             </div>
                             <FormControl>
                               <Switch
@@ -1572,14 +1103,6 @@ export default function TrafficWardenForm() {
 
                   <div className="space-y-4">
                     <div className="flex items-center space-x-2">
-                      {/* <Switch
-                        id="root_shell"
-                        checked={formData.root_shell}
-                        onCheckedChange={(checked) =>
-                          handleSwitchChange("root_shell", checked)
-                        }
-                      />
-                      <Label htmlFor="root_shell">Root Shell</Label> */}
                       <FormField
                         control={form.control}
                         name="root_shell"
@@ -1587,10 +1110,6 @@ export default function TrafficWardenForm() {
                           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                             <div className="space-y-0.5">
                               <FormLabel>root shell</FormLabel>
-                              {/* <FormDescription>
-                                Receive emails about new products, features, and
-                                more.
-                              </FormDescription> */}
                             </div>
                             <FormControl>
                               <Switch
@@ -1603,14 +1122,6 @@ export default function TrafficWardenForm() {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      {/* <Switch
-                        id="su_attempted"
-                        checked={formData.su_attempted}
-                        onCheckedChange={(checked) =>
-                          handleSwitchChange("su_attempted", checked)
-                        }
-                      />
-                      <Label htmlFor="su_attempted">Su Attempted</Label> */}
                       <FormField
                         control={form.control}
                         name="su_attempted"
@@ -1618,9 +1129,6 @@ export default function TrafficWardenForm() {
                           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                             <div className="space-y-0.5">
                               <FormLabel>Su Attempted</FormLabel>
-                              {/* <FormDescription>
-                      Receive emails about new products, features, and more.
-                    </FormDescription> */}
                             </div>
                             <FormControl>
                               <Switch
@@ -1633,14 +1141,6 @@ export default function TrafficWardenForm() {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      {/* <Switch
-                        id="is_host_login"
-                        checked={formData.is_host_login}
-                        onCheckedChange={(checked) =>
-                          handleSwitchChange("is_host_login", checked)
-                        }
-                      />
-                      <Label htmlFor="is_host_login">Is Host Login</Label> */}
                       <FormField
                         control={form.control}
                         name="is_host_login"
@@ -1648,9 +1148,6 @@ export default function TrafficWardenForm() {
                           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                             <div className="space-y-0.5">
                               <FormLabel>Is Host Login</FormLabel>
-                              {/* <FormDescription>
-                      Receive emails about new products, features, and more.
-                    </FormDescription> */}
                             </div>
                             <FormControl>
                               <Switch
@@ -1663,14 +1160,6 @@ export default function TrafficWardenForm() {
                       />
                     </div>
                     <div className="flex items-center space-x-2">
-                      {/* <Switch
-                        id="is_guest_login"
-                        checked={formData.is_guest_login}
-                        onCheckedChange={(checked) =>
-                          handleSwitchChange("is_guest_login", checked)
-                        }
-                      />
-                      <Label htmlFor="is_guest_login">Is Guest Login</Label> */}
                       <FormField
                         control={form.control}
                         name="is_guest_login"
@@ -1678,9 +1167,6 @@ export default function TrafficWardenForm() {
                           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                             <div className="space-y-0.5">
                               <FormLabel>Is guest login</FormLabel>
-                              {/* <FormDescription>
-                      Receive emails about new products, features, and more.
-                    </FormDescription> */}
                             </div>
                             <FormControl>
                               <Switch
@@ -1697,15 +1183,6 @@ export default function TrafficWardenForm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                   <div className="space-y-2">
-                    {/* <Label htmlFor="num_failed_logins">Failed Logins</Label>
-                    <Input
-                      id="num_failed_logins"
-                      name="num_failed_logins"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.num_failed_logins}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="num_failed_logins"
@@ -1715,24 +1192,13 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="num_failed_logins" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="num_compromised">Compromised</Label>
-                    <Input
-                      id="num_compromised"
-                      name="num_compromised"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.num_compromised}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="num_compromised"
@@ -1742,24 +1208,13 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="num_compromised" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="num_root">Root</Label>
-                    <Input
-                      id="num_root"
-                      name="num_root"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.num_root}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="num_root"
@@ -1769,24 +1224,13 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="num_root" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="num_file_creations">File Creations</Label>
-                    <Input
-                      id="num_file_creations"
-                      name="num_file_creations"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.num_file_creations}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="num_file_creations"
@@ -1799,24 +1243,13 @@ export default function TrafficWardenForm() {
                               {...field}
                             />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="num_shells">Shells</Label>
-                    <Input
-                      id="num_shells"
-                      name="num_shells"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.num_shells}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="num_shells"
@@ -1826,24 +1259,13 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="num_shells" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="num_access_files">Access Files</Label>
-                    <Input
-                      id="num_access_files"
-                      name="num_access_files"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.num_access_files}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="num_access_files"
@@ -1853,24 +1275,13 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="num_access_files" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
                   <div className="space-y-2">
-                    {/* <Label htmlFor="num_outbound_cmds">Outbound Commands</Label>
-                    <Input
-                      id="num_outbound_cmds"
-                      name="num_outbound_cmds"
-                      type="number"
-                      placeholder="Enter count"
-                      value={formData.num_outbound_cmds}
-                      onChange={handleInputChange}
-                    /> */}
                     <FormField
                       control={form.control}
                       name="num_outbound_cmds"
@@ -1880,9 +1291,7 @@ export default function TrafficWardenForm() {
                           <FormControl>
                             <Input placeholder="num_outbound_cmds" {...field} />
                           </FormControl>
-                          {/* <FormDescription>
-                            This is your public display name.
-                          </FormDescription> */}
+
                           <FormMessage />
                         </FormItem>
                       )}
