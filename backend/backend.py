@@ -18,14 +18,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = joblib.load("model.pkl")
-scaler = joblib.load("scaler.pkl")
+model = joblib.load("model/model.pkl")
+scaler = joblib.load("model/scaler.pkl")
 # label_encoder = joblib.load("label_encoder.pkl")
-target_encoder = joblib.load('target_encoder.pkl')
-le_protocol_type = joblib.load('le_protocol_type.pkl')
-le_service = joblib.load('le_service.pkl')
-le_flag = joblib.load('le_flag.pkl')
-le_duration_bin = joblib.load('le_duration_bin.pkl')
+target_encoder = joblib.load('model/target_encoder.pkl')
+le_protocol_type = joblib.load('model/le_protocol_type.pkl')
+le_service = joblib.load('model/le_service.pkl')
+le_flag = joblib.load('model/le_flag.pkl')
+le_duration_bin = joblib.load('model/le_duration_bin.pkl')
 
 
 class Features(BaseModel):
