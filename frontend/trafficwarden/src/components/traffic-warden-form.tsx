@@ -1015,8 +1015,8 @@ export default function TrafficWardenForm() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={!!field.value} // convert number to boolean for UI
+                                onCheckedChange={(val) => field.onChange(val ? 1 : 0)}
                               />
                             </FormControl>
                           </FormItem>
@@ -1034,8 +1034,8 @@ export default function TrafficWardenForm() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={!!field.value}
+                                onCheckedChange={(val) => field.onChange(val ? 1 : 0)}
                               />
                             </FormControl>
                           </FormItem>
@@ -1053,8 +1053,8 @@ export default function TrafficWardenForm() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={!!field.value}
+                                onCheckedChange={(val) => field.onChange(val ? 1 : 0)}
                               />
                             </FormControl>
                           </FormItem>
@@ -1072,8 +1072,8 @@ export default function TrafficWardenForm() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={!!field.value}
+                                onCheckedChange={(val) => field.onChange(val ? 1 : 0)}
                               />
                             </FormControl>
                           </FormItem>
@@ -1091,8 +1091,8 @@ export default function TrafficWardenForm() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={!!field.value}
+                                onCheckedChange={(val) => field.onChange(val ? 1 : 0)}
                               />
                             </FormControl>
                           </FormItem>
@@ -1113,8 +1113,8 @@ export default function TrafficWardenForm() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={!!field.value}
+                                onCheckedChange={(val) => field.onChange(val ? 1 : 0)}
                               />
                             </FormControl>
                           </FormItem>
@@ -1132,8 +1132,8 @@ export default function TrafficWardenForm() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={!!field.value}
+                                onCheckedChange={(val) => field.onChange(val ? 1 : 0)}
                               />
                             </FormControl>
                           </FormItem>
@@ -1151,8 +1151,8 @@ export default function TrafficWardenForm() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={!!field.value}
+                                onCheckedChange={(val) => field.onChange(val ? 1 : 0)}
                               />
                             </FormControl>
                           </FormItem>
@@ -1170,8 +1170,8 @@ export default function TrafficWardenForm() {
                             </div>
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={!!field.value}
+                                onCheckedChange={(val) => field.onChange(val ? 1 : 0)}
                               />
                             </FormControl>
                           </FormItem>
