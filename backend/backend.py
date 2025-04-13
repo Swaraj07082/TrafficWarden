@@ -10,6 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 
+
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -71,7 +74,9 @@ class Features(BaseModel):
     dst_host_rerror_rate: float
     dst_host_srv_rerror_rate   : float     
 
-
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the FastAPI app!"}
 
 @app.post('/predict')
 async def predict(features : Features):
